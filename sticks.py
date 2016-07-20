@@ -49,14 +49,8 @@ class StickGame:
                 self.sticks -= sticks_taken
                 break
 
-    def take_sticks_ai(self):
-        """Choose a random number of sticks from the hat content,
-           and record the choice"""
-        sticks_taken = random.choice(self.ai.hats[self.sticks]['content'])
-        self.ai.hats[self.sticks]['choice'] = sticks_taken
-        self.sticks -= sticks_taken
-
     def take_sticks_like_a_pro(self):
+        print("\nThere are {} sticks on the board".format(self.sticks))
         shit_sticks = 1
         while shit_sticks < self.sticks - 4:
             shit_sticks += 4
@@ -65,6 +59,7 @@ class StickGame:
         else:
             sticks_taken = 1
         self.sticks -= sticks_taken
+        print("Player 2 (Smart AI) takes {} sticks".format(sticks_taken))
 
     def change_turn(self):
         if self.player_turn == "Player 1":
@@ -74,13 +69,19 @@ class StickGame:
 
     def __init__(self):
         print("Welcome to the Game of Sticks!")
-        mode = input("'P' for Player vs. Player, 'S' for Player vs. Smart AI, 'Any Key' for Player vs. Slow Learning AI ").lower()
+        mode = input("""'P' for Player vs. Player
+'S' for Player vs. Smart AI
+'A' for AI vs. AI
+'Any Other Key' for Player vs. Slow Learning AI""").lower()
         if mode == 'p':
             print("You've selected Player vs. Player!")
             self.mode = 'human'
         elif mode == 's':
             print("You've selected Player vs. Smart AI!")
             self.mode = 'no fun'
+        elif mode == 'a':
+            print("You've selected Player vs. Smart AI!")
+            self.mode = 'ai ai'
         else:
             print("You've selected Player vs. Learning Slowly AI!")
             self.mode = 'ai'
@@ -101,16 +102,25 @@ class StickGame:
 
         if self.mode == 'ai':
             self.ai = AI(self.sticks)
+        elif self.mode == 'ai ai':
+            self.ai1 = AI(self.sticks)
+            self.ai2 = AI(self.sticks)
 
         while True:
             self.sticks = self.start_sticks
             self.player_turn = "Player 1"
             while self.sticks > 0:
                 if self.mode == 'ai' and self.player_turn == "Player 2":
-                    self.take_sticks_ai()
+                    self.ai.take_sticks_ai(self.sticks)
                     self.change_turn()
                 elif self.mode == 'no fun' and self.player_turn == "Player 2":
                     self.take_sticks_like_a_pro()
+                    self.change_turn()
+                elif self.mode == 'ai ai' and self.player_turn == "Player 1":
+                    self.ai1.take_sticks_ai(self.sticks)
+                    self.change_turn()
+                elif self.mode == 'ai ai' and self.player_turn == "Player 2":
+                    self.ai2.take_sticks_ai(self.sticks)
                     self.change_turn()
                 else:
                     self.take_sticks()
@@ -120,6 +130,14 @@ class StickGame:
             replay = input("'Y' to play again, Any Key to quit: ").lower()
 
             if replay != 'y':
+                if self.mode == 'ai':
+                    print(self.ai)
+                elif self.mode == 'ai ai':
+                    print("Player 1 AI")
+                    print(self.ai1)
+                    print("Player 2 AI")
+                    print(self.ai2)
+
                 print("Thanks for playing!")
                 break
 
@@ -135,7 +153,14 @@ class AI:
             print("{}: {}".format(keys, values))
         return __name__
 
-
+    def take_sticks_ai(self, sticks):
+        """Choose a random number of sticks from the hat content,
+           and record the choice"""
+        print("\nThere are {} sticks on the board".format(sticks))
+        sticks_taken = random.choice(self.hats[sticks]['content'])
+        self.hats[sticks]['choice'] = sticks_taken
+        sticks -= sticks_taken
+        return sticks
 
 def main():
     StickGame()
@@ -166,5 +191,62 @@ Player 1: How many sticks do you take (1-3)? 1
 Player 1, you lose.
 """
 
+"""
+Welcome to the Game of Sticks!
+How many sticks are there on the table initially (10-100)? 10
+Options:
+ Play against a friend (1)
+ Play against the computer (2)
+ Play against the trained computer (3)
+Which option do you take (1-3)? 3
+Training AI, please wait...
+
+There are 10 sticks on the board.
+Player 1: How many sticks do you take (1-3)? 3
+
+There are 7 sticks on the board.
+AI selects 2.
+
+There are 5 sticks on the board.
+Player 1: How many sticks do you take (1-3)? 1
+
+There are 4 sticks on the board.
+AI selects 3.
+
+There is 1 stick on the board.
+Player 1: How many sticks do you take (1-3)? 1
+You lose.
+Play again (y/n)? y
+
+There are 10 sticks on the board.
+Player 1: How many sticks do you take (1-3)? 2
+
+There are 8 sticks on the board.
+AI selects 3.
+
+There are 5 sticks on the board.
+Player 1: How many sticks do you take (1-3)? 2
+
+There are 3 sticks on the board.
+AI selects 2.
+
+There is 1 stick on the board.
+Player 1: How many sticks do you take (1-3)? 1
+You lose.
+Play again (y/n)? n
+
+"""
+
+
 if __name__ == '__main__':
     main()
+
+"""
+    def take_sticks_ai(self):
+        #Choose a random number of sticks from the hat content,
+        #and record the choice
+        sticks_taken = random.choice(self.ai.hats[self.sticks]['content'])
+        self.ai.hats[self.sticks]['choice'] = sticks_taken
+        self.sticks -= sticks_taken
+
+"""
